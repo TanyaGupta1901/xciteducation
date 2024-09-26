@@ -4,14 +4,21 @@ import MenuIcon from "@material-ui/icons/Menu"
 import HomeIcon from '@material-ui/icons/Home'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import { Link as RouterLink } from "react-router-dom"
+import axios from "axios"
+import {useHistory} from 'react-router'
 
 import {Navbar, Container, Nav, NavDropdown} from "react-bootstrap"
 
 import '../Css/header.css'
 const headersData = [
   {
-    label: "About Us",
-    href: "/Aboutus",
+    label: "Home",
+    href: "/",
+    icon: (<AccountCircleIcon fontSize="large"/>),
+  },
+  {
+    label: "Open Source Community",
+    href: "/OpenSource",
     icon: (<HomeIcon fontSize="large"/>),
   },
   {
@@ -19,16 +26,16 @@ const headersData = [
     href: "/Service",
     icon: (<HomeIcon fontSize="large"/>),
   },
+  {
+    label: "About Us",
+    href: "/Aboutus",
+    icon: (<HomeIcon fontSize="large"/>),
+  },
   // {
   //   label: "Careers",
   //   href: "/Careers",
   //   icon: (<HomeIcon fontSize="large"/>),
   // },
-  {
-    label: "Open Source Community",
-    href: "/OpenSource",
-    icon: (<HomeIcon fontSize="large"/>),
-  },
   // {
   //   label: "Affiliate Marketing",
   //   href: "/Marketing",
@@ -39,17 +46,11 @@ const headersData = [
   //   href: "/Internship",
   //   icon: (<HomeIcon fontSize="large"/>),
   // },
-  
   // {
   //   label: "Research Prospects",
   //   href: "/Research",
   //   icon: (<HomeIcon fontSize="large"/>),
   // },
-  {
-    label: "Login",
-    href: "/Login",
-    icon: (<AccountCircleIcon fontSize="large"/>),
-  }
 ];
 
 const useStyles = makeStyles(() => ({
@@ -96,6 +97,7 @@ const useStyles = makeStyles(() => ({
 
 export default function Header() {
   const { header, logo, menuButton, toolbar, drawerContainer } = useStyles();
+  const history = useHistory();
 
   const [state, setState] = useState({
     mobileView: false,
@@ -129,7 +131,15 @@ export default function Header() {
   },[localStorage.getItem('username') == null]);
 
 ////////////////////////////////////////////////////////////////////////////
-
+function logout(e) {
+  e.preventDefault();
+  axios.post("http://localhost:5000/logout")
+    .then(res => {
+      console.log(res);
+      localStorage.removeItem("username");
+      history.push("/");
+    })
+}
 //////////////////////////////////////////////////////////////////////////// 
 
   const displayDesktop = () => {
@@ -138,27 +148,7 @@ export default function Header() {
         {xciteduLogo}
         <div style={{marginTop: "-20px"}}>{getMenuButtons()}</div>
         {localStorage.getItem('username') != null ? 
-          // <Navbar variant="dark" bg="dark" expand="lg">
-          // <Container fluid>
-          //   <Navbar.Toggle aria-controls="navbar-dark-example" />
-          //   <Navbar.Collapse id="navbar-dark-example">
-          //     <Nav>
-          //       <NavDropdown
-          //         id="nav-dropdown-dark-example"
-          //         title="Dropdown"
-          //         menuVariant="dark"
-          //       >
-          //           <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-          //           <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-          //           <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-          //           <NavDropdown.Divider />
-          //           <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-          //         </NavDropdown>
-          //       </Nav>
-          //     </Navbar.Collapse>
-          //   </Container>
-          // </Navbar>
-          <AccountCircleIcon fontSize="large"/>
+          <AccountCircleIcon fontSize="large" onClick={(e)=>logout(e)}/>
          :
         <a href="/Login" style={{color: "white", fontFamily: "Open Sans, sans-serif",
         fontWeight: 400, size: "18px"}}>Login</a>}
@@ -225,7 +215,7 @@ export default function Header() {
   };
 
   const xciteduLogo = (
-    <Typography variant="h6" component="h1" className={logo}>
+    <Typography variant="h6" component="h1" className={logo} style={{marginTop:"10px"}}>
       XCITEDUCATION
     </Typography>
   );
